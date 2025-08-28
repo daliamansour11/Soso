@@ -9,160 +9,201 @@ import 'package:stackfood_multivendor/helper/route_helper.dart';
 import 'package:stackfood_multivendor/util/dimensions.dart';
 import 'package:stackfood_multivendor/util/styles.dart';
 
-class OnBoardingScreen extends StatelessWidget {
+class OnBoardingScreen extends StatefulWidget {
   OnBoardingScreen({super.key});
+
+  @override
+  State<OnBoardingScreen> createState() => _OnBoardingScreenState();
+}
+class _OnBoardingScreenState extends State<OnBoardingScreen> {
   final PageController _pageController = PageController();
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     Get.find<OnBoardingController>().getOnBoardingList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return GetBuilder<OnBoardingController>(builder: (onBoardingController) {
       return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).primaryColor.withOpacity(0.05),
-          actions: [
-            onBoardingController.selectedIndex == 2 ? const SizedBox() : InkWell(
-              onTap: () {
-                _configureToRouteInitialPage();
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-                child: Text('skip'.tr, style: robotoBold.copyWith(color: Theme.of(context).disabledColor)),
-              ),
-            ),
-            const SizedBox(width: 30),
-          ],
-        ),
-        body: onBoardingController.onBoardingList != null ? Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        body: onBoardingController.onBoardingList != null
+            ? Stack(
+          children: [
 
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.7,
-            child: PageView.builder(
+
+            PageView.builder(
               controller: _pageController,
               itemCount: onBoardingController.onBoardingList!.length,
-              itemBuilder: (context, index) {
-                return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-
-                  Stack(alignment: Alignment.bottomCenter, children: [
-
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.55, width: MediaQuery.of(context).size.width,
-                      child: CustomAssetImageWidget(
-                        onBoardingController.onBoardingList![index].frameImageUrl,
-                        width: MediaQuery.of(context).size.width,
-                        fit: BoxFit.fill,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-
-                    Positioned(
-                      bottom: 120,
-                      child: CustomAssetImageWidget(
-                        onBoardingController.onBoardingList![index].imageUrl,
-                        width: MediaQuery.of(context).size.width * 0.60,
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-
-                  ]),
-
-                  Text(
-                    onBoardingController.onBoardingList![index].title,
-                    style: robotoBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: Dimensions.paddingSizeSmall),
-
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.75,
-                    child: Text(
-                      onBoardingController.onBoardingList![index].description,
-                      style: robotoRegular.copyWith(color: Theme.of(context).disabledColor),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-
-
-                ]);
-              },
               onPageChanged: (index) {
                 onBoardingController.changeSelectIndex(index);
               },
-
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 28.0),
+                  child: CustomAssetImageWidget(
+                    onBoardingController.onBoardingList![index].imageUrl,
+                    fit: BoxFit.cover,
+                  ),
+                );
+              },
             ),
-          ),
 
-
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeExtraLarge),
-            child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: _pageIndicators(onBoardingController, context),
-              ),
-
-              Stack(children: [
-
-                Center(
-                  child: SizedBox(
-                    height: 50, width: 50,
-                    child: CircularProgressIndicator(
-                      value: (onBoardingController.selectedIndex + 1) / onBoardingController.onBoardingList!.length,
-                      valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
-                      backgroundColor: Theme.of(context).primaryColor.withOpacity(0.3),
-                    ),
-                  ),
-                ),
-
-                Positioned(
-                  top: 7, left: 7, right: 7, bottom: 7,
-                  child: InkWell(
-                    splashColor: Colors.transparent,
-                    onTap: () {
-                      if(onBoardingController.selectedIndex != 2) {
-                        _pageController.nextPage(duration: const Duration(seconds: 1), curve: Curves.ease);
-                      }else {
-                        _configureToRouteInitialPage();
-                      }
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        shape: BoxShape.circle,
+            SafeArea(
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: onBoardingController.selectedIndex ==
+                      onBoardingController.onBoardingList!.length - 1
+                      ? const SizedBox()
+                      : InkWell(
+                    onTap: _configureToRouteInitialPage,
+                    child: Text(
+                      "skip".tr,
+                      style: robotoBold.copyWith(
+                        color: Colors.white,
+                        fontSize: 16,
                       ),
-                      child: Icon(Icons.arrow_forward_ios, size: 15, color: Theme.of(context).cardColor),
                     ),
                   ),
                 ),
+              ),
+            ),
 
-              ]),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                height: 265,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, -2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: _buildPageIndicator(onBoardingController),
+                    ),
+                    const SizedBox(height: 16),
 
-            ]),
-          ),
+                    Text(
+                      onBoardingController
+                          .onBoardingList![
+                      onBoardingController.selectedIndex]
+                          .title,
+                      style: robotoBold.copyWith(
+                          fontSize: Dimensions.fontSizeExtraLarge),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
 
-        ]) : const Center(child: CircularProgressIndicator()),
+                    Text(
+                      onBoardingController
+                          .onBoardingList![
+                      onBoardingController.selectedIndex]
+                          .description,
+                      style: robotoRegular.copyWith(
+                        color: Theme.of(context).disabledColor,
+                        fontSize: 14,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+
+                    ElevatedButton(
+
+                      style: ElevatedButton.styleFrom(
+
+                        backgroundColor:
+                        Theme.of(context).primaryColor,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 14),
+                        shape: RoundedRectangleBorder(
+
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () {
+                        if (onBoardingController.selectedIndex !=
+                            onBoardingController
+                                .onBoardingList!.length -
+                                1) {
+                          _pageController.nextPage(
+                            duration:
+                            const Duration(milliseconds: 500),
+                            curve: Curves.ease,
+                          );
+                        } else {
+                          _configureToRouteInitialPage();
+                        }
+                      },
+                      child: Text(
+                        onBoardingController.selectedIndex ==
+                            onBoardingController
+                                .onBoardingList!.length -
+                                1
+                            ? "continue".tr
+                            : "get_started".tr,
+                        style: const TextStyle(
+                            color: Colors.white, fontSize: 16),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        )
+            : const Center(child: CircularProgressIndicator()),
       );
     });
   }
 
-  List<Widget> _pageIndicators(OnBoardingController onBoardingController, BuildContext context) {
-    List<Container> indicators = [];
+  List<Widget> _buildPageIndicator(OnBoardingController controller) {
+    List<Widget> list = [];
+    for (int i = 0; i < controller.onBoardingList!.length; i++) {
+      list.add(i == controller.selectedIndex ? _indicator(true) : _indicator(false));
+    }
+    return list;
+  }
 
-    for (int i = 0; i < onBoardingController.onBoardingList!.length; i++) {
-      indicators.add(
-        Container(
-          width: i == onBoardingController.selectedIndex ? 24 : 7, height: 7,
-          margin: const EdgeInsets.only(right: 10),
+  Widget _indicator(bool isActive) {
+    return AnimatedScale(
+      scale: isActive ? 1.5 : 1.0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 300),
+        opacity: isActive ? 1.0 : 0.4,
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 4.0),
+          height: 8.0,
+          width: 8.0,
           decoration: BoxDecoration(
-            color: i == onBoardingController.selectedIndex ? Theme.of(context).primaryColor : Theme.of(context).primaryColor.withOpacity(0.40),
-            borderRadius: i == onBoardingController.selectedIndex ? BorderRadius.circular(50) : BorderRadius.circular(25),
+            shape: BoxShape.circle,
+            color: Theme.of(Get.context!).primaryColor,
           ),
         ),
-      );
-    }
-    return indicators;
+      ),
+    );
   }
+
 
   void _configureToRouteInitialPage() async {
     Get.find<SplashController>().disableIntro();
@@ -170,7 +211,8 @@ class OnBoardingScreen extends StatelessWidget {
     if (AddressHelper.getAddressFromSharedPref() != null) {
       Get.offNamed(RouteHelper.getInitialRoute(fromSplash: true));
     } else {
-      Get.find<SplashController>().navigateToLocationScreen('splash', offNamed: true);
+      Get.find<SplashController>()
+          .navigateToLocationScreen('splash', offNamed: true);
     }
   }
 }
